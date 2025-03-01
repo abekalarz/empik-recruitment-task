@@ -24,23 +24,34 @@ class ComplaintService(
     fun addComplaint(request: ComplaintRequest, forwardedHeader: String?): ComplaintResponse {
         val existingComplaint = complaintRepository.findByProductIdAndReporter(request.productId, request.reporter)
 
+        logger.info("Existing complaint = $existingComplaint")
+
         val complaint = existingComplaint?.apply { incrementCounter() }
             ?: createNewComplaint(request, forwardedHeader)
 
         return complaintRepository.save(complaint).toComplaintResponse()
     }
 
-    private fun createNewComplaint(request: ComplaintRequest, forwardedHeader: String?): Complaint {
-        val reporterIp = ipAddressExtractor.extractIp(forwardedHeader)
-
-        logger.info("Reporter ip = $reporterIp")
-
-        val country = ipLocationService.getCountryByIp(reporterIp)
-
-        logger.info("Reporter country = $country")
-
-        return request.toComplaint(country)
+    @Transactional
+    fun updateContent(productId: String, reporter: String, newContent: String): ComplaintResponse? {
+        val complaint = complaintRepository.findByProductIdAndReporter(productId, reporter)
+        return complaint?.let {
+            it.updateContent(newContent)
+            complaintRepository.save(it).toComplaintResponse()
+        }
     }
 
+    fun getComplaint(productId: String, reporter: String): ComplaintResponse? =
+        complaintRepository.findByProductIdAndReporter(productId, reporter)?.toComplaintResponse()
+
+    fun getAllComplaints(): List<ComplaintResponse> =
+        complaintRepository.findAll()
+            .map { it.toComplaintResponse() }
+
+    private fun createNewComplaint(request: ComplaintRequest, forwardedHeader: String?): Complaint {
+        val reporterIp = ipAddressExtractor.extractIp(forwardedHeader)
+        val country = ipLocationService.getCountryByIp(reporterIp)
+        return request.toComplaint(country)
+    }
 
 }
