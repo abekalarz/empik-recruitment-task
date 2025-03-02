@@ -8,7 +8,7 @@ import org.springframework.web.context.request.ServletRequestAttributes
 class IpAddressExtractor {
 
     fun extractIp(forwardedHeader: String?): String {
-        val clientIp = forwardedHeader?.split(",")?.firstOrNull()
+        val clientIp = forwardedHeader?.split(",")?.firstOrNull()?.takeIf { it.isNotBlank() }?.trim()
         return clientIp ?: extractIpFromRemoteAddr()
     }
 
