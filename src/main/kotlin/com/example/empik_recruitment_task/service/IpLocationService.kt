@@ -16,7 +16,6 @@ class IpLocationService(
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(IpLocationService::class.java)
-
     private val httpClient: HttpClient = HttpClient.newHttpClient()
 
     fun getCountryByIp(ip: String): String {
@@ -26,22 +25,21 @@ class IpLocationService(
             .GET()
             .build()
 
-        // runCatching wyłapuje wyjątki i opakuje je w Result
-        // Jeśli wszystko pójdzie ok, mamy "onSuccess"; w przeciwnym razie "onFailure"
         return runCatching {
             val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
-
-            logger.info("Response = $response")
-
-            // Sprawdzamy kod odpowiedzi
             if (response.statusCode() == 200) {
-                response.body() ?: "Unknown"
+                response.body() ?: DEFAULT_RESPONSE
             } else {
-                "Unknown"
+                logger.error("Got response another response code than 'Http 200' from [$host]. Got response code: [${response.statusCode()}]")
+                DEFAULT_RESPONSE
             }
         }.getOrElse {
-            // getOrElse wywoływane jest w przypadku wyjątku
-            "Unknown"
+            logger.error("Got error response from [$host]. Details: [${it.message}]")
+            DEFAULT_RESPONSE
         }
+    }
+
+    companion object {
+        private const val DEFAULT_RESPONSE = "Unknown"
     }
 }

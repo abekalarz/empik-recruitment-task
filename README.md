@@ -32,10 +32,9 @@ curl -X GET http://localhost:8080/api/v1/complaints/ABC123/jan.kowalski@example.
   -H "X-Forwarded-For: 108.138.7.23, 203.0.113.5, 93.184.216.34"
 ```
 
-## Get all available complaints
+## Get all available complaints (example for page=0, size=10, sort by: productId, descending)
 
 ```
-curl -X GET http://localhost:8080/api/v1/complaints/all \
-  -H "Content-Type: application/json" \
-  -H "X-Forwarded-For: 108.138.7.23, 203.0.113.5, 93.184.216.34"
+curl -X GET "http://localhost:8080/api/v1/complaints?page=0&size=10&sort=productId,desc" \
+  -H "Content-Type: application/json"
 ```

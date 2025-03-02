@@ -5,6 +5,9 @@ import com.example.empik_recruitment_task.dto.ComplaintResponse
 import com.example.empik_recruitment_task.dto.ComplaintUpdateRequest
 import com.example.empik_recruitment_task.service.ComplaintService
 import jakarta.validation.Valid
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.web.bind.annotation.*
 
 // TODO Add valid loggers !
@@ -33,7 +36,9 @@ class ComplaintController(
         @PathVariable reporter: String
     ): ComplaintResponse? = complaintService.getComplaint(productId, reporter)
 
-    @GetMapping("/all")
-    fun getAllComplaints(): List<ComplaintResponse> = complaintService.getAllComplaints()
+    @GetMapping
+    fun getAll(
+        @PageableDefault(page = 0, size = 5, sort = ["productId"]) pageable: Pageable
+    ): Page<ComplaintResponse> = complaintService.getAllComplaints(pageable)
 
 }

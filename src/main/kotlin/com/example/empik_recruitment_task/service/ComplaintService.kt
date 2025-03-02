@@ -6,10 +6,13 @@ import com.example.empik_recruitment_task.model.Complaint
 import com.example.empik_recruitment_task.model.toComplaint
 import com.example.empik_recruitment_task.model.toComplaintResponse
 import com.example.empik_recruitment_task.repository.ComplaintRepository
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+
 
 @Service
 class ComplaintService(
@@ -22,14 +25,19 @@ class ComplaintService(
 
     @Transactional
     fun addComplaint(request: ComplaintRequest, forwardedHeader: String?): ComplaintResponse {
+        logger.info("New complaint creation STARTED for productId [${request.productId}] and reporter [${request.reporter}]")
+
         val existingComplaint = complaintRepository.findByProductIdAndReporter(request.productId, request.reporter)
+        val complaint = existingComplaint?.apply {
+            logger.warn("Complaint already exists for productId [${request.productId}] and reporter [${request.reporter}]. Incrementing counter...")
+            incrementCounter()
+        } ?: createNewComplaint(request, forwardedHeader)
 
-        logger.info("Existing complaint = $existingComplaint")
+        val savedComplaint = complaintRepository.save(complaint).toComplaintResponse()
 
-        val complaint = existingComplaint?.apply { incrementCounter() }
-            ?: createNewComplaint(request, forwardedHeader)
+        logger.info("New complaint creation FINISHED for productId [${request.productId}] and reporter [${request.reporter}]")
 
-        return complaintRepository.save(complaint).toComplaintResponse()
+        return savedComplaint
     }
 
     @Transactional
@@ -38,14 +46,16 @@ class ComplaintService(
         return complaint?.let {
             it.updateContent(newContent)
             complaintRepository.save(it).toComplaintResponse()
+        }?.also {
+            logger.info("Complaint content successfully UPDATED for productId [$productId] and reporter [$reporter]")
         }
     }
 
     fun getComplaint(productId: String, reporter: String): ComplaintResponse? =
         complaintRepository.findByProductIdAndReporter(productId, reporter)?.toComplaintResponse()
 
-    fun getAllComplaints(): List<ComplaintResponse> =
-        complaintRepository.findAll()
+    fun getAllComplaints(pageable: Pageable): Page<ComplaintResponse> =
+        complaintRepository.findAll(pageable)
             .map { it.toComplaintResponse() }
 
     private fun createNewComplaint(request: ComplaintRequest, forwardedHeader: String?): Complaint {
