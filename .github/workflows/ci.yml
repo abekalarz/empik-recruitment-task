@@ -23,7 +23,7 @@ jobs:
           java-version: '17'
 
       - name: Run tests
-        run: ./gradlew test
+        run: ./gradlew test --info
 
       - name: Archive test report
         if: always()
