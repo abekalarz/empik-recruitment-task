@@ -32,7 +32,7 @@ internal class IpAddressExtractorTest {
         @Test
         fun `should return the first IP address from X-Forwarded-For header`() {
             // given
-            val forwardedHeader = "192.168.1.1, 127.0.0.1"
+            val forwardedHeader = "192.168.1.2, 127.0.0.1"
 
             // when
             val result = ipAddressExtractor.extractIp(forwardedHeader)
