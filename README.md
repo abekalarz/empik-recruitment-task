@@ -20,6 +20,9 @@
     with full standard SQL actions available. It is lightweight and very fast solution. 
     Especially it is good option for POC or small projects.
 5. All database migrations are prepared with help of Flyway framework.
+6. For purposes of client's IP address decoding used 'X-Forwarded-For' header and as fallback used
+   REMOTE_ADDR.
+7. For translation of the client's IP address to country name used API from 'REMOTE_ADDR' https://ipapi.co/
 
 ## API usage with cURL examples
 
