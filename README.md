@@ -1,6 +1,29 @@
 # empik-recruitment-task
 
-## Add new complaint
+## How to run project?
+* All what is needed to run project is to open project directory and run in terminal below command:
+```
+./gradlew bootRun
+```
+
+## How to run tests?
+* All what is needed to run project tests is to open project directory and run in terminal below command:
+```
+./gradlew test
+```
+
+## Key points
+1. Project is written and composed with usage of tech stack: Kotlin, Spring Boot, H2 database, Gradlew KTS (Kotlin).
+2. Project gives possibility to report complaints related to products.
+3. Exemplary API actions are given below with cURL examples.
+4. No physical database was used (H2 database), which is in-memory database, but with
+    with full standard SQL actions available. It is lightweight and very fast solution. 
+    Especially it is good option for POC or small projects.
+5. All database migrations are prepared with help of Flyway framework.
+
+## API usage with cURL examples
+
+### Add new complaint
 
 ```
 curl -X POST http://localhost:8080/api/v1/complaints \
@@ -13,7 +36,7 @@ curl -X POST http://localhost:8080/api/v1/complaints \
   }'
 ```
 
-## Edit complaint content
+### Edit complaint content
 
 ```
 curl -X PUT http://localhost:8080/api/v1/complaints/ABC123/jan.kowalski@example.com \
@@ -24,7 +47,7 @@ curl -X PUT http://localhost:8080/api/v1/complaints/ABC123/jan.kowalski@example.
   }'
 ```
 
-## Get complaint
+### Get complaint
 
 ```
 curl -X GET http://localhost:8080/api/v1/complaints/ABC123/jan.kowalski@example.com \
@@ -32,7 +55,7 @@ curl -X GET http://localhost:8080/api/v1/complaints/ABC123/jan.kowalski@example.
   -H "X-Forwarded-For: 108.138.7.23, 203.0.113.5, 93.184.216.34"
 ```
 
-## Get all available complaints (example for page=0, size=10, sort by: productId, descending)
+### Get all available complaints (example for page=0, size=10, sort by: productId, descending)
 
 ```
 curl -X GET "http://localhost:8080/api/v1/complaints?page=0&size=10&sort=productId,desc" \
