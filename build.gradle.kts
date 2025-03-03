@@ -49,6 +49,15 @@ allOpen {
 	annotation("jakarta.persistence.Embeddable")
 }
 
+sourceSets {
+	main {
+		kotlin.srcDirs("src/main/kotlin")
+	}
+	test {
+		kotlin.srcDirs("src/test/kotlin")
+	}
+}
+
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
